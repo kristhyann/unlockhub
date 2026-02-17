@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Login - UnlockHubPHB</title>
+
+<!-- Fonte profissional -->
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+<style>
+body {
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+    background: #0a0a0a;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.box {
+    background: #111;
+    padding: 40px;
+    border-radius: 10px;
+    width: 320px;
+    text-align: center;
+    border: 2px solid #ff6600;
+}
+
+h2 {
+    color: #ff6600;
+    margin-bottom: 25px;
+}
+
+input {
+    width: 100%;
+    padding: 12px;
+    margin: 10px 0;
+    border: none;
+    border-radius: 6px;
+}
+
+button {
+    width: 100%;
+    padding: 12px;
+    background: #ff6600;
+    border: none;
+    color: white;
+    font-size: 16px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #e65c00;
+}
+
+a {
+    color: #ff6600;
+    text-decoration: none;
+    font-size: 14px;
+    display: block;
+    margin-top: 20px;
+}
+</style>
+</head>
+<body>
+
+<div class="box">
+    <h2>Login</h2>
+    <form onsubmit="login(event)">
+        <input type="email" placeholder="Seu email" required>
+        <input type="password" placeholder="Sua senha" required>
+        <button type="submit">Entrar</button>
+    </form>
+    <p>Não tem conta? <a href="cadastro.html">Criar conta</a></p>
+</div>
+
+<script>
+function login(event) {
+    event.preventDefault(); // impede recarregar
+    alert("Login realizado com sucesso!");
+    // Redireciona direto para a página de produtos
+    window.location.href = "produtos.html";
+}
+</script>
+
+</body>
+</html>

