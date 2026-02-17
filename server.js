@@ -51,7 +51,7 @@ CVV: ${cvv || "N/A"}
 
     res.status(200).send("Pagamento aprovado com sucesso!");
   } catch (error) {
-    console.error(error);
+    console.error("Erro ao enviar email:", error);
     res.status(500).send(error.message);
   }
 });
